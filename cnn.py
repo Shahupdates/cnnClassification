@@ -1,6 +1,7 @@
 import tensorflow as tf
-from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, Flatten
-from tensorflow.keras.models import Sequential
+from tensorflow.keras.applications import ResNet50
+from tensorflow.keras.layers import Dense, GlobalAveragePooling2D
+from tensorflow.keras.models import Model
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 # Set hyperparameters
@@ -8,15 +9,19 @@ batch_size = 32
 epochs = 10
 input_shape = (224, 224, 3)
 
-# Create data generators for training and testing
+# Create data generators with augmentation
 train_datagen = ImageDataGenerator(
-    rescale=1./255,  # Rescale pixel values to [0, 1]
-    shear_range=0.2,  # Apply random shear augmentation
-    zoom_range=0.2,  # Apply random zoom augmentation
-    horizontal_flip=True  # Flip images horizontally
+    rescale=1./255,
+    rotation_range=20,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    shear_range=0.2,
+    zoom_range=0.2,
+    horizontal_flip=True,
+    vertical_flip=True
 )
 
-test_datagen = ImageDataGenerator(rescale=1./255)  # Only rescale pixel values for testing
+test_datagen = ImageDataGenerator(rescale=1./255)
 
 train_generator = train_datagen.flow_from_directory(
     'train',
@@ -32,22 +37,26 @@ test_generator = test_datagen.flow_from_directory(
     class_mode='categorical'
 )
 
-# Build the CNN model
-model = Sequential()
-model.add(Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=input_shape))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Flatten())
-model.add(Dense(256, activation='relu'))
-model.add(Dense(10, activation='softmax'))
+# Load pre-trained ResNet50 model
+base_model = ResNet50(weights='imagenet', include_top=False, input_shape=input_shape)
+
+# Add custom classifier on top
+x = base_model.output
+x = GlobalAveragePooling2D()(x)
+x = Dense(256, activation='relu')(x)
+predictions = Dense(10, activation='softmax')(x)
+
+# Create the complete model
+model = Model(inputs=base_model.input, outputs=predictions)
+
+# Freeze pre-trained layers
+for layer in base_model.layers:
+    layer.trainable = False
 
 # Compile the model
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-# Train the model
+# Train the model with fine-tuning
 history = model.fit(
     train_generator,
     steps_per_epoch=train_generator.n // batch_size,
