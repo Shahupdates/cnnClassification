@@ -45,11 +45,11 @@ pip install tensorflow keras
 
 1. Prepare your dataset by organizing images into separate directories for each class.
 
-2. Adjust the hyperparameters and model architecture in the `cnn_image_classification.py` file according to your requirements.
+2. Adjust the hyperparameters and model architecture in the `image_classifier.py` file according to your requirements.
 
-3. Train the model: ``` python cnn_image_classification.py ```
+3. Train the model: ``` python image_classifier.py ```
 
-4. Evaluate the model: ``` python cnn_image_classification.py --mode eval ```
+4. Evaluate the model: ``` python image_classifier.py --mode eval ```
 
 ## Dataset
 
