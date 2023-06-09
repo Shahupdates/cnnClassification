@@ -47,7 +47,9 @@ pip install tensorflow keras
 
 2. Adjust the hyperparameters and model architecture in the `image_classifier.py` file according to your requirements.
 
-3. Train the model: ``` python image_classifier.py ```
+3. Train the model: 
+No-Gui: ``` python image_classifier.py ```
+Gui: ``` python gui.py ```
 
 4. Evaluate the model: ``` python image_classifier.py --mode eval ```
 
