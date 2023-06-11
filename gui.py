@@ -63,16 +63,20 @@ class GUI:
             messagebox.showerror("Error", str(e))
 
     def train(self):
-        # Retrieve hyperparameters
-        batch_size = int(self.batch_size.get())
-        epochs = int(self.epochs.get())
-        train_dir = self.train_dir.get()
-        test_dir = self.test_dir.get()
+        try:
+            # Retrieve hyperparameters
+            batch_size = int(self.batch_size.get())
+            epochs = int(self.epochs.get())
+            train_dir = self.train_dir.get()
+            test_dir = self.test_dir.get()
 
-        # Train the model
-        self.classifier.train(train_dir, test_dir, batch_size, epochs)
+            # Train the model
+            self.classifier.train(train_dir, test_dir, batch_size, epochs)
 
-        self.progress['text'] = 'Training complete'
+            self.progress['text'] = 'Training complete'
+        except Exception as e:
+            self.progress['text'] = 'Training failed'
+            messagebox.showerror("Error", str(e))
 
     def load_model(self):
         model_path = filedialog.askopenfilename()
