@@ -66,16 +66,18 @@ class GUI:
         self.classifier.train(train_dir, test_dir, batch_size, epochs)
 
         self.progress['text'] = 'Training complete'
-
+        
     def load_model(self):
         model_path = filedialog.askopenfilename()
-        self.classifier.load_model(model_path)
-        self.progress['text'] = 'Model loaded'
+        if model_path:
+            self.classifier.load_model(model_path)
+            self.progress['text'] = 'Model loaded'
 
     def save_model(self):
         model_path = filedialog.asksaveasfilename(defaultextension=".h5")
-        self.classifier.save_model(model_path)
-        self.progress['text'] = 'Model saved'
+        if model_path:
+            self.classifier.save_model(model_path)
+            self.progress['text'] = 'Model saved'
 
 if __name__ == '__main__':
     root = tk.Tk()
