@@ -52,8 +52,15 @@ class GUI:
         self.test_dir.set(filedialog.askdirectory())
 
     def start_training(self):
-        self.progress['text'] = 'Training...'
-        threading.Thread(target=self.train).start()
+        try:
+            batch_size = int(self.batch_size.get())
+            epochs = int(self.epochs.get())
+            if batch_size <= 0 or epochs <= 0:
+                raise ValueError('Batch size and epochs must be positive.')
+            self.progress['text'] = 'Training...'
+            threading.Thread(target=self.train).start()
+        except ValueError as e:
+            messagebox.showerror("Error", str(e))
 
     def train(self):
         # Retrieve hyperparameters
